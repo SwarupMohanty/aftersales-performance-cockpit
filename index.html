@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aftersales Performance Cockpit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F2;--surface:#FFFFFF;--sunk:#F3F5F6;--ink:#0F2229;--mute:#5B6B72;--line:#D9DFE2;--teal:#0E7C86;--amber:#C97F06;--red:#C23B2E;--green:#2F8F5B;--steel:#8FA3AD;--deep:#0B2A33;--deepink:#E9F1F3;--deepmute:#9DB4BC;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#071318;--surface:#0E1F26;--sunk:#132A33;--ink:#E8EEF0;--mute:#93A6AE;--line:#213842;--teal:#3CC0C9;--amber:#F2B441;--red:#F0705F;--green:#58C48A;--steel:#5F7780;--deep:#04090B}}
+:root[data-theme="dark"]{--bg:#071318;--surface:#0E1F26;--sunk:#132A33;--ink:#E8EEF0;--mute:#93A6AE;--line:#213842;--teal:#3CC0C9;--amber:#F2B441;--red:#F0705F;--green:#58C48A;--steel:#5F7780;--deep:#04090B}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14.5px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3,.num,nav button,.big{font-family:"Saira Semi Condensed","Arial Narrow",system-ui,sans-serif}
+header{background:var(--deep);color:var(--deepink);padding:22px 28px 0}
+.hd{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;max-width:1240px;margin:0 auto}
+header h1{margin:0;font-size:30px;font-weight:700;letter-spacing:.2px;line-height:1.15}
+header p{margin:4px 0 0;color:var(--deepmute);font-size:13.5px}
+.period{font-size:13px;color:var(--deepmute);text-align:right}
+.period b{display:block;color:var(--deepink);font-size:15px;font-weight:600}
+nav{display:flex;gap:2px;max-width:1240px;margin:18px auto 0;overflow-x:auto}
+nav button{background:none;border:0;color:var(--deepmute);font-size:15.5px;font-weight:600;padding:10px 14px 12px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav button:hover{color:var(--deepink)}
+nav button.on{color:#fff;border-bottom-color:#F2B441}
+nav button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid #F2B441;outline-offset:2px}
+main{max-width:1240px;margin:0 auto;padding:18px 28px 40px}
+.disc{background:var(--sunk);border-left:3px solid var(--amber);padding:9px 14px;font-size:13px;color:var(--mute);border-radius:0 6px 6px 0;margin-bottom:18px}
+.disc b{color:var(--ink)}
+.tab{display:none}.tab.on{display:block}
+.grid{display:grid;gap:16px;margin-top:16px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g31{grid-template-columns:1.55fr 1fr}
+@media(max-width:900px){.g2,.g3,.g31{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}header,main{padding-left:16px;padding-right:16px}header h1{font-size:24px}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;min-width:0}
+.card h3{margin:0;font-size:18px;font-weight:600;line-height:1.25}
+.card .sub{margin:3px 0 12px;color:var(--mute);font-size:13px}
+.lead{background:var(--deep);color:var(--deepink);border-radius:12px;padding:24px 26px}
+.lead h2{margin:0;font-size:27px;line-height:1.22;font-weight:600;max-width:30em}
+.lead h2 em{font-style:normal;color:#F2B441}
+.lead p{margin:10px 0 0;color:var(--deepmute);max-width:62em}
+.read{border-left:3px solid var(--teal);padding:2px 0 2px 14px;margin:14px 0 0;font-size:14px}
+.read b{font-weight:600}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile .l{font-size:13px;color:var(--mute)}
+.tile .big{font-size:30px;font-weight:700;line-height:1.1;margin-top:2px;font-variant-numeric:tabular-nums}
+.tile .d{font-size:12.5px;margin-top:3px}
+.pos{color:var(--green)}.neg{color:var(--red)}.amb{color:var(--amber)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{fill:var(--mute);font-size:11.5px;font-family:"IBM Plex Sans",system-ui,sans-serif}
+svg text.b{fill:var(--ink);font-weight:600}
+svg text.n{font-family:"Saira Semi Condensed","Arial Narrow",sans-serif;fill:var(--ink);font-weight:700}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-weight:600;color:var(--mute);padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.heat td{text-align:center;font-variant-numeric:tabular-nums;border:2px solid var(--surface);border-radius:6px;padding:8px 6px;font-weight:500}
+.heat td:first-child{text-align:left;font-weight:600;white-space:nowrap}
+.heat td small{display:block;font-weight:400;color:var(--mute)}
+.heat th{text-align:center;white-space:normal;font-size:12px;line-height:1.25;vertical-align:bottom}
+.heat th:first-child{text-align:left}
+.rec{display:grid;grid-template-columns:30px 1fr 130px;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.rec:last-child{border:0}
+.rec .n{width:28px;height:28px;border-radius:50%;background:var(--teal);color:var(--surface);font:700 14px "Saira Semi Condensed",sans-serif;display:flex;align-items:center;justify-content:center}
+.rec b{font-weight:600}.rec .m{font-size:13px;color:var(--mute);margin-top:2px}
+.rec .bar{height:6px;border-radius:3px;background:var(--teal);margin-top:7px;min-width:3px}
+.rec .imp{text-align:right;font:700 20px "Saira Semi Condensed",sans-serif;color:var(--green);line-height:1.1}
+.rec .imp small{display:block;font:400 12px "IBM Plex Sans",sans-serif;color:var(--mute);margin-top:2px}
+@media(max-width:600px){.rec{grid-template-columns:30px 1fr}.rec .imp{grid-column:2;text-align:left}}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--mute);margin:0 0 6px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.sl{display:grid;grid-template-columns:150px 1fr 64px;gap:10px;align-items:center;margin:10px 0;font-size:13.5px}
+.sl output{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--teal)}
+.out{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+.out div{background:var(--sunk);border-radius:8px;padding:10px 12px}
+.out .l{font-size:12.5px;color:var(--mute)}.out .v{font:700 24px "Saira Semi Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid var(--steel);vertical-align:middle}
+.dot.f{background:var(--teal);border-color:var(--teal)}.dot.h{background:linear-gradient(90deg,var(--amber) 50%,transparent 50%);border-color:var(--amber)}
+.pill{display:inline-block;white-space:nowrap;padding:1px 9px;border-radius:10px;font-size:12px;font-weight:600}
+.pill.g{background:color-mix(in srgb,var(--green) 18%,var(--surface));color:var(--green)}
+.pill.a{background:color-mix(in srgb,var(--amber) 20%,var(--surface));color:var(--amber)}
+.pill.x{background:color-mix(in srgb,var(--red) 16%,var(--surface));color:var(--red)}
+a{color:var(--teal)}
+ul.plain{margin:8px 0 0;padding-left:18px}ul.plain li{margin:5px 0}
+ol.plain{margin:8px 0 0;padding-left:20px}ol.plain li{margin:6px 0}
+#tip{position:fixed;pointer-events:none;background:#04090B;color:#fff;font-size:12.5px;padding:7px 10px;border-radius:6px;max-width:270px;opacity:0;transition:opacity .1s;z-index:9;line-height:1.4}
+.foot{font-size:12.5px;color:var(--mute);margin-top:24px}
+</style></head><body>
+<header>
+ <div class="hd">
+  <div><h1>Aftersales Performance Cockpit</h1><p>A working prototype for a multi-site Nissan, INFINITI and Renault aftersales business. Built by Swarup Kumar Mohanty.</p></div>
+  <div class="period"><b>January to September 2026</b>Nine sites, 310 technicians, figures in AED</div>
+ </div>
+ <nav id="nav" aria-label="Sections"></nav>
+</header>
+<main>
+<div class="disc"><b>Illustrative data.</b> Every site, figure, budget and benchmark in the first six tabs is invented to show how I would plan and report an aftersales business. None of it is Al Masaood data. The last tab uses public information only, with sources.</div>
+
+<section class="tab" id="t-story">
+ <div class="lead"><h2 id="headline"></h2><p id="headsub"></p></div>
+ <div class="card" style="margin-top:16px"><h3>Where a paid technician hour goes</h3><p class="sub">Per 100 hours on the payroll, year to date. The dashed mark on each column is the plan.</p>
+  <div class="scroll"><div id="flow" style="min-width:720px"></div></div>
+  <p class="read" id="flowRead"></p></div>
+ <div class="grid g4" id="tiles"></div>
+ <div class="grid g31">
+  <div class="card"><h3>Five actions, ranked by what they are worth</h3><p class="sub">Gross profit per year at full run rate. Assumptions are on each line; none depends on new headcount.</p><div id="recs"></div></div>
+  <div class="card"><h3>Gross profit this year against plan</h3><p class="sub">AED million, by month. Shaded band is the forecast range for the last quarter.</p><div id="fanS"></div><p class="read" id="fanRead"></p></div>
+ </div>
+</section>
+
+<section class="tab" id="t-net">
+ <div class="grid g2" style="margin-top:0">
+  <div class="card"><h3>Which sites are busy, and which are quick</h3><p class="sub">Each circle is a site, sized by labour sales. Lines mark the plan: 85% utilisation, 108% efficiency.</p><div id="bubble"></div><p class="read" id="bubRead"></p></div>
+  <div class="card"><h3>Labour sales against budget, by site</h3><p class="sub">AED million, year to date. Sorted from largest shortfall.</p><div id="divg"></div><p class="read" id="divRead"></p></div>
+ </div>
+ <div class="card" style="margin-top:16px"><h3>One scorecard, same definitions at every site</h3><p class="sub">Each cell is shaded by distance from target: teal on or ahead, amber within reach, red well behind. Hover a cell for the target.</p>
+  <div class="scroll"><table class="heat" id="heat"></table></div></div>
+</section>
+
+<section class="tab" id="t-ws">
+ <div class="grid g4" style="margin-top:0" id="gauges"></div>
+ <div class="grid g2">
+  <div class="card"><h3>What a few points are worth</h3><p class="sub">Move the sliders. The model applies the change to every site and annualises it.</p>
+   <div class="sl"><label for="sU">Utilisation</label><input id="sU" type="range" min="0" max="10" step="0.5" value="3"><output id="oU"></output></div>
+   <div class="sl"><label for="sE">Efficiency</label><input id="sE" type="range" min="0" max="6" step="0.5" value="1"><output id="oE"></output></div>
+   <div class="sl"><label for="sR">Labour rate realised</label><input id="sR" type="range" min="0" max="5" step="0.5" value="1"><output id="oR"></output></div>
+   <div class="out"><div><div class="l">Hours sold per 100 attended</div><div class="v" id="simP"></div></div><div><div class="l">Extra labour sales a year</div><div class="v" id="simL"></div></div><div><div class="l">Extra gross profit a year</div><div class="v pos" id="simG"></div></div></div>
+   <p class="read">Extra hours carry labour margin of 72% and pull parts through at 27% margin. A better realised rate drops straight to profit.</p></div>
+  <div class="card"><h3>Why hours go unsold</h3><p class="sub">Attended hours not clocked to a job, by reason, share of the total. From job-card and clocking codes.</p><div id="idle"></div><p class="read">Two of the top three reasons sit outside the workshop: parts supply and customer approval. That is why this is a planning problem and not only a workshop one.</p></div>
+ </div>
+</section>
+
+<section class="tab" id="t-cust">
+ <div class="grid g31" style="margin-top:0">
+  <div class="card"><h3>Customers leave when the warranty does</h3><p class="sub">Share of vehicles still serviced with us, by vehicle age. Shaded area is the gap to a good dealer network.</p><div id="reten"></div><p class="read" id="retRead"></p></div>
+  <div class="card"><h3>Warranty: where the claim value goes</h3><p class="sub">AED million of claims raised, year to date, and why claims were refused.</p><div id="warr"></div><p class="read">Seven in ten refusals are paperwork and timing. A weekly ageing list by site fixes those without touching the workshop.</p></div>
+ </div>
+ <div class="grid g2">
+  <div class="card"><h3>Parts: the wrong stock, not too little</h3><p class="sub">Days of stock against first-pick availability, by site. The shaded corner is the target.</p><div id="parts"></div><p class="read">Sites holding the most stock have the worst availability. The money is in slow lines, so the fix is a mix change, not a bigger order.</p></div>
+  <div class="card"><h3>Fix it first time and the score follows</h3><p class="sub">Customer satisfaction against fixed-first-visit rate, by site.</p><div id="csi"></div><p class="read" id="csiRead"></p></div>
+ </div>
+</section>
+
+<section class="tab" id="t-plan">
+ <div class="grid g31" style="margin-top:0">
+  <div class="card"><h3>From budget to actual, one driver at a time</h3><p class="sub">Aftersales gross profit, AED million, year to date. Every step has an owner.</p><div id="bridge"></div><p class="read" id="brRead"></p></div>
+  <div class="card"><h3>Full-year outlook</h3><p class="sub">Monthly gross profit, AED million.</p><div id="fanP"></div><div class="out" id="fyOut"></div></div>
+ </div>
+ <div class="card" style="margin-top:16px"><h3>Variance summary</h3><p class="sub">Year to date against budget and prior year, AED million unless shown.</p><div class="scroll"><table id="varT"></table></div></div>
+</section>
+
+<section class="tab" id="t-erp">
+ <div class="grid g31" style="margin-top:0">
+  <div class="card"><h3>Is each report ready for the new ERP?</h3><p class="sub">Ten management reports through five gates. Filled is done, half is in progress, empty is not started.</p><div class="scroll"><table id="ready"></table></div></div>
+  <div class="card"><h3>Month-end pack: twelve working days to five</h3><p class="sub">Working days after month end, today against the proposed calendar.</p><div id="cal"></div><p class="read">Extraction and site validation take seven of today's twelve days. Automating those two steps is where the time comes back.</p></div>
+ </div>
+ <div class="card" style="margin-top:16px"><h3>Do the old system, the new ERP and the principal return agree?</h3><p class="sub">August close, parallel run. A report is not signed off until its row is clean or explained.</p><div class="scroll"><table id="recon"></table></div></div>
+</section>
+
+<section class="tab" id="t-co">
+ <div class="grid g2" style="margin-top:0">
+  <div class="card"><h3>What is public about Al Masaood Automobiles</h3>
+   <ul class="plain">
+    <li>Authorised distributor for Nissan, INFINITI and Renault in Abu Dhabi, Al Ain and Al Dhafra, with Nissan since 1984. <a href="https://www.albawaba.com/business/pr/al-masaood-automobiles-ensures-continued-1623915" target="_blank" rel="noopener">Press release, March 2026</a></li>
+    <li>Chief executive is Irfan Tansel. The company site lists Harmeet Singh as Aftersales Director, the role this job reports to. <a href="https://masaood.com/en/what-we-do/mobility/al-masaood-automobiles/" target="_blank" rel="noopener">Company page</a></li>
+    <li>Won Nissan's Global Aftersales Award three years running, fiscal 2020 to 2022. The reporting bar with the principal is already high. <a href="https://masaood.com/en/media-centre/latest-news/al-masaood-automobiles-crowned-with-the-global-nissan-aftersales-award-for-third-consecutive-year" target="_blank" rel="noopener">Company news</a></li>
+    <li>Describes its Abu Dhabi Nissan service centre as the largest in the world. One very large site next to smaller ones makes like-for-like reporting the hard part. <a href="https://masaood.com/en/what-we-do/mobility/al-masaood-automobiles/" target="_blank" rel="noopener">Company page</a></li>
+    <li>Opened a system-led parts distribution centre in KEZAD in January 2026 to change how parts are planned and delivered across the network. <a href="https://www.cbinsights.com/company/al-masaood-automobiles" target="_blank" rel="noopener">Announcement summary</a></li>
+    <li>The group also runs multi-brand Auto Central outlets, so aftersales is more than franchise workshops. <a href="https://gulfnews.com/auto/auto-care/al-masaood-widens-operations-across-northern-emirates-1.1608114268945" target="_blank" rel="noopener">Gulf News</a></li>
+   </ul>
+   <p class="read"><b>Not found in public sources:</b> which ERP is being implemented, aftersales revenue, technician or bay counts, and current reporting tools. These are first-conversation questions.</p></div>
+  <div class="card"><h3>The sector in one view</h3>
+   <ul class="plain">
+    <li>One estimate puts the UAE automotive aftermarket at USD 7.2 billion in 2024, reaching USD 9.7 billion by 2030, about 5% a year. <a href="https://www.kenresearch.com/industry-reports/united-arab-emirates-automotive-aftermarket-service-chains-market" target="_blank" rel="noopener">Ken Research</a></li>
+    <li>Demand follows the number of vehicles on the road and how hard they are used, so retention of older vehicles matters more than new-car sales in any one year.</li>
+    <li>Authorised workshops compete with independent chains, quick-service centres and mobile servicing once a vehicle is out of warranty.</li>
+    <li>For a distributor, aftersales is the steady profit line: labour margins are high and the customer base is already owned.</li>
+   </ul>
+   <h3 style="margin-top:18px">Targets used in this prototype</h3><p class="sub">Common industry rules of thumb. To be replaced with the principal's dealer standards.</p>
+   <div class="scroll"><table id="defs"></table></div></div>
+ </div>
+ <div class="grid g2">
+  <div class="card"><h3>How the prototype maps to the job</h3><div class="scroll"><table id="jd"></table></div></div>
+  <div class="card"><h3>First 90 days</h3>
+   <ol class="plain">
+    <li><b>Days 1 to 30, baseline.</b> Sit with each site and with Finance, Parts, Service, Warranty and Customer Experience. Write down every KPI definition in use and where each number comes from. Time the current month-end pack.</li>
+    <li><b>Days 31 to 60, standardise.</b> One scorecard, one template, one calendar. Agree definitions with the Aftersales Director and Finance. Hand reporting requirements to the ERP team with test cases.</li>
+    <li><b>Days 61 to 90, automate and forecast.</b> Pack assembled from the data layer, not by hand. First driver-based forecast: hours, rate, parts attach, retention. Action log reviewed monthly with owners.</li>
+   </ol>
+   <p class="read"><b>Where I am not a direct fit:</b> my planning and reporting experience is in B2B technology, not a dealership. The disciplines are the same; the workshop vocabulary I would learn on site in the first month.</p></div>
+ </div>
+</section>
+
+<p class="foot">Prototype by Swarup Kumar Mohanty. One HTML file with hand-drawn charts and no real company data. In production this would sit on the ERP and dealer-management data, refreshed daily, with every figure traceable to a job card.</p>
+</main>
+<div id="tip" role="status"></div>
+
+<script>
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+const TEAL='var(--teal)',AMB='var(--amber)',RED='var(--red)',GRN='var(--green)',STEEL='var(--steel)',LINE='var(--line)',INK='var(--ink)',SUNK='var(--sunk)',SURF='var(--surface)';
+const STY=['fill','stroke','opacity','fill-opacity','stroke-opacity'];
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a){if(STY.includes(k))e.style.setProperty(k,a[k]);else e.setAttribute(k,a[k])}if(p)p.appendChild(e);return e}
+function S(id,W,H){const h=$(id);h.innerHTML='';return el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'},h)}
+function T(s,x,y,str,o={}){const t=el('text',{x,y,'text-anchor':o.a||'start'},s);if(o.c)t.setAttribute('class',o.c);if(o.s)t.setAttribute('style',o.s);t.textContent=str;return t}
+const P=pts=>pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join('');
+const f1=x=>x.toFixed(1),f0=x=>Math.round(x).toLocaleString('en-US'),sg=x=>(x>=0?'+':'−')+Math.abs(x).toFixed(1),pc=x=>x.toFixed(1)+'%';
+const mix=(c,p)=>`color-mix(in srgb, ${c} ${p}%, var(--surface))`;
+
+// ---------- data (all invented)
+const HRS=182,MO=9,GPL=.72,GPP=.27,TU=85,TE=108,ANN=12/MO;
+const SITES=[
+ {n:'Abu Dhabi Main',k:'AD Main',b:'Nissan',t:96,u:81,e:109,r:208,pr:1.05,csi:88,ffv:91,ret:58,fill:93,rej:4.1,sd:62,rg:.03},
+ {n:'Abu Dhabi INFINITI',k:'INFINITI',b:'INFINITI',t:28,u:74,e:112,r:298,pr:1.20,csi:91,ffv:93,ret:62,fill:89,rej:3.2,sd:88,rg:.05},
+ {n:'Abu Dhabi Renault',k:'Renault',b:'Renault',t:22,u:69,e:101,r:192,pr:1.10,csi:82,ffv:84,ret:41,fill:84,rej:7.8,sd:104,rg:.02},
+ {n:'Express North',k:'Exp North',b:'Quick service',t:24,u:88,e:104,r:168,pr:.85,csi:86,ffv:95,ret:55,fill:96,rej:null,sd:38,rg:.02},
+ {n:'Express South',k:'Exp South',b:'Quick service',t:20,u:79,e:98,r:165,pr:.85,csi:81,ffv:92,ret:49,fill:94,rej:null,sd:44,rg:.06},
+ {n:'Body and Paint',k:'Body',b:'Body shop',t:44,u:72,e:96,r:236,pr:1.40,csi:79,ffv:86,ret:null,fill:87,rej:2.0,sd:71,rg:.04},
+ {n:'Al Ain Main',k:'Al Ain',b:'All brands',t:46,u:77,e:105,r:201,pr:1.00,csi:87,ffv:90,ret:54,fill:90,rej:5.6,sd:79,rg:.035},
+ {n:'Al Ain Express',k:'AA Exp',b:'Quick service',t:12,u:83,e:101,r:166,pr:.85,csi:85,ffv:93,ret:51,fill:93,rej:null,sd:41,rg:.02},
+ {n:'Al Dhafra',k:'Al Dhafra',b:'All brands',t:18,u:64,e:99,r:198,pr:.95,csi:84,ffv:88,ret:47,fill:81,rej:6.9,sd:118,rg:.03}];
+SITES.forEach(s=>{s.att=s.t*HRS*MO;s.wk=s.att*s.u/100;s.sold=s.wk*s.e/100;s.lab=s.sold*s.r/1e6;s.rb=s.r*(1+s.rg);s.labB=s.att*TU/100*TE/100*s.rb/1e6;s.prod=s.u*s.e/100});
+const sum=f=>SITES.reduce((a,s)=>a+f(s),0);
+const N={att:sum(s=>s.att),wk:sum(s=>s.wk),sold:sum(s=>s.sold),lab:sum(s=>s.lab),labB:sum(s=>s.labB),t:sum(s=>s.t)};
+N.u=N.wk/N.att*100;N.e=N.sold/N.wk*100;N.p=N.sold/N.att*100;N.elr=N.lab*1e6/N.sold;N.rb=sum(s=>s.sold*s.rb)/N.sold;
+const TP=TU*TE/100;
+// bridge effects on labour sales, then gross profit
+const effU=sum(s=>s.att*(s.u-TU)/100*TE/100*s.rb)/1e6,effE=sum(s=>s.att*s.u/100*(s.e-TE)/100*s.rb)/1e6,effR=sum(s=>s.sold*(s.r-s.rb))/1e6;
+const PARTS_GP_B=62.0,dParts=-3.1,dWarr=-0.6,dOth=0.4;
+const gpB=N.labB*GPL+PARTS_GP_B,gU=effU*GPL,gE=effE*GPL,gR=effR,gpA=gpB+gU+gE+gR+dParts+dWarr+dOth;
+// retention
+const AGE=[1,2,3,4,5,6,7],UIO=[21000,20000,19000,17500,16000,14500,13000],RET=[92,84,71,52,38,29,22],RBM=[94,88,80,66,52,41,33];
+const VIS=1.6,ROV=1150,GPBL=.46;
+// recommendations
+const r1=sum(s=>s.u<78?s.att*(80-s.u)/100*s.e/100*s.r*(GPL+s.pr*GPP):0)/1e6*ANN;
+const r2=[3,4,5,6].reduce((a,i)=>a+UIO[i]*.06,0)*VIS*ROV*GPBL/1e6;
+const r3=sum(s=>s.sold*(s.rb-s.r))/3/1e6*ANN;
+const WCL=24.0,WREJ=1.1,r4=(WREJ-WCL*.02)*ANN;
+const r5=0.3;
+const RECS=[
+ ['Lift the five idle sites to 80% utilisation','Daily loading board by site; parts pre-picked the day before; approvals chased by service advisers. Assumes work is waiting, which the booking lead time supports.',r1,'Service managers'],
+ ['Keep six more vehicles in every hundred after warranty','Service plans sold at year three; age-based pricing for years four to seven; lapsed-customer list worked monthly.',r2,'Customer Experience'],
+ ['Recover a third of the labour-rate leakage','Discount reasons made mandatory on the job card; goodwill approved above a threshold; report by adviser.',r3,'Service, Finance'],
+ ['Cut warranty refusals from 4.6% to 2%','Weekly claim-ageing list by site; submission within five days; parts-return check before closing.',r4,'Warranty'],
+ ['Release slow parts stock','Return or transfer lines with no movement in twelve months; reorder points by site demand. Frees about AED 4m of cash.',r5,'Parts']];
+const RTOT=RECS.reduce((a,r)=>a+r[2],0);
+
+// ---------- tooltip + tabs
+const tip=$('tip');
+function showTip(e){const t=e.target.closest&&e.target.closest('[data-tip]');if(!t){tip.style.opacity=0;return}tip.innerHTML=t.getAttribute('data-tip');tip.style.opacity=1;const w=tip.offsetWidth,p=e.touches?e.touches[0]:e;tip.style.left=Math.max(6,Math.min(window.innerWidth-w-8,p.clientX+14))+'px';tip.style.top=(p.clientY+16)+'px'}
+document.addEventListener('mousemove',showTip);document.addEventListener('touchstart',showTip,{passive:true});
+const TABS=[['story','The story'],['net','Network'],['ws','Workshop'],['cust','Customers and parts'],['plan','Plan and forecast'],['erp','ERP and governance'],['co','Company and role']];
+$('nav').innerHTML=TABS.map(t=>`<button data-t="${t[0]}">${t[1]}</button>`).join('');
+function show(t){if(!$('t-'+t))t='story';document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='t-'+t));document.querySelectorAll('nav button').forEach(b=>{b.classList.toggle('on',b.dataset.t===t);b.setAttribute('aria-current',b.dataset.t===t?'page':'false')});try{localStorage.setItem('asTab',t)}catch(e){}}
+$('nav').onclick=e=>{if(e.target.dataset.t){show(e.target.dataset.t);window.scrollTo(0,0)}};
+let st0='story';try{st0=localStorage.getItem('asTab')||'story'}catch(e){}show(st0);
+
+// ---------- STORY
+$('headline').innerHTML=`Of every 100 hours technicians attend, <em>${Math.round(N.p)} are sold</em>. The plan needs ${Math.round(TP)}. Five actions recover about <em>AED ${f1(RTOT)}m</em> of gross profit a year.`;
+$('headsub').textContent=`Gross profit is AED ${f1(gpA)}m against a budget of ${f1(gpB)}m, ${f1((gpB-gpA)/gpB*100)}% short. The largest single cause is idle time (${Math.round(gU/(gpA-gpB)*100)}% of the gap), concentrated at five sites, and much of it starts outside the workshop: parts, approvals and customers lost after warranty.`;
+
+(function(){const W=960,H=312,base=250,sc=1.9,cw=100,x0=24,gap=(W-2*x0-5*cw)/4,s=S('flow',W,H);
+ const A=90,Wk=A*N.u/100,So=Wk*N.e/100,Fr=So*N.elr/N.rb,PW=A*TU/100,PS=PW*TE/100;
+ const st=[['Paid',100,100,'On the payroll'],['Attended',A,A,'At work, clocked in'],['Worked on jobs',Wk,PW,'Clocked to a job card'],['Sold',So,PS,'Hours invoiced'],['Sold at plan rate',Fr,PS,'After discounts']];
+ const why=[['Leave, training,','absence'],['Waiting: parts, bays,','approvals'],['Beating','standard times'],['Discounts, goodwill,','rate mix']];
+ const defs=el('defs',{},s),pt=el('pattern',{id:'hat',width:6,height:6,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);el('rect',{width:2.4,height:6,fill:RED},pt);
+ el('line',{x1:0,x2:W,y1:base,y2:base,stroke:LINE},s);
+ st.forEach((r,i)=>{const x=x0+i*(cw+gap),h=r[1]*sc,y=base-h;
+  if(i<4){const n=st[i+1],x2=x+cw+gap,y2=base-n[1]*sc;
+   el('path',{d:P([[x+cw,y],[x2,y2],[x2,base],[x+cw,base]])+'Z',fill:TEAL,opacity:.16},s);
+   const d=n[1]-r[1];if(d<0)el('path',{d:P([[x+cw,y],[x2,y],[x2,y2]])+'Z',fill:'url(#hat)',opacity:.55},s);
+   const mx=x+cw+gap/2,ty=Math.min(y,y2)-34;
+   T(s,mx,ty,sg(d),{a:'middle',c:'n',s:`font-size:17px;fill:${d<0?RED:GRN}`});T(s,mx,ty+14,why[i][0],{a:'middle'});T(s,mx,ty+27,why[i][1],{a:'middle'})}
+  el('rect',{x,y,width:cw,height:h,rx:4,fill:i===4?TEAL:INK,opacity:i===4?1:.82-.1*i,'data-tip':`<b>${r[0]}</b><br>${f1(r[1])} hours per 100 paid${r[2]!==r[1]?'<br>Plan '+f1(r[2]):''}`},s);
+  T(s,x+cw/2,y+24,f1(r[1]),{a:'middle',c:'n',s:'font-size:20px;fill:#fff'});
+  if(Math.abs(r[2]-r[1])>.05){const py=base-r[2]*sc;el('line',{x1:x-6,x2:x+cw+6,y1:py,y2:py,stroke:AMB,'stroke-width':2.2,'stroke-dasharray':'5 4'},s);T(s,x+cw/2,py-7,'plan '+f1(r[2]),{a:'middle',s:`fill:${AMB};font-weight:600`})}
+  T(s,x+cw/2,base+19,r[0],{a:'middle',c:'b',s:'font-size:13px'});T(s,x+cw/2,base+35,r[3],{a:'middle'})});
+ $('flowRead').innerHTML=`<b>${f1(A-Wk)} of every 100 paid hours are attended but never reach a job card.</b> The plan allows ${f1(A-PW)}. Efficiency is within ${f1(TE-N.e)} points of plan, so the larger loss is in getting work to technicians, not in how they work.`})();
+
+(function(){const d=[['Hours sold per 100 attended',f1(N.p),`plan ${f1(TP)}`,'neg'],['Labour sales',`${f1(N.lab)}m`,`${sg(N.lab-N.labB)}m to budget`,'neg'],['Aftersales gross profit',`${f1(gpA)}m`,`${sg(gpA-gpB)}m to budget`,'neg'],['Recoverable a year',`${f1(RTOT)}m`,'five actions, no new headcount','pos']];
+ $('tiles').innerHTML=d.map(r=>`<div class="tile"><div class="l">${r[0]}</div><div class="big">${r[1]}</div><div class="d ${r[3]}">${r[2]}</div></div>`).join('')})();
+(function(){const mx=Math.max(...RECS.map(r=>r[2]));$('recs').innerHTML=RECS.map((r,i)=>`<div class="rec"><div class="n">${i+1}</div><div><b>${r[0]}</b><div class="m">${r[1]}</div><div class="bar" style="width:${r[2]/mx*100}%"></div></div><div class="imp">+${f1(r[2])}m<small>${r[3]}</small></div></div>`).join('')})();
+
+// monthly gross profit, fan
+const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const wa=[.108,.098,.100,.112,.116,.118,.114,.117,.117],wb=[.105,.100,.104,.110,.113,.115,.116,.118,.119];
+const mAct=wa.map(w=>w*gpA),mBud=wb.map(w=>w*gpB).concat([1,1.01,.98].map(k=>gpB/9*1.05*k));
+const l3=(mAct[6]+mAct[7]+mAct[8])/3,mFc=[1,1.01,.97].map(k=>l3*k);
+const fyB=mBud.reduce((a,b)=>a+b,0),fyF=gpA+mFc.reduce((a,b)=>a+b,0);
+function fan(id,W,H){const L=30,R=44,Tp=12,B=22,s=S(id,W,H),lo=10,hi=18,x=i=>L+i*(W-L-R)/11,y=v=>H-B-(v-lo)/(hi-lo)*(H-B-Tp);
+ [10,12,14,16,18].forEach(v=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:LINE},s);T(s,L-6,y(v)+4,v,{a:'end'})});
+ const up=[[x(8),y(mAct[8])]].concat(mFc.map((v,i)=>[x(9+i),y(v*(1+.03*(i+1)))])),dn=[[x(8),y(mAct[8])]].concat(mFc.map((v,i)=>[x(9+i),y(v*(1-.03*(i+1)))])).reverse();
+ el('path',{d:P(up.concat(dn))+'Z',fill:TEAL,opacity:.18},s);
+ el('path',{d:P(mBud.map((v,i)=>[x(i),y(v)])),fill:'none',stroke:AMB,'stroke-width':2,'stroke-dasharray':'5 4'},s);
+ el('path',{d:P([[x(8),y(mAct[8])]].concat(mFc.map((v,i)=>[x(9+i),y(v)]))),fill:'none',stroke:TEAL,'stroke-width':2.2,'stroke-dasharray':'2 4'},s);
+ el('path',{d:P(mAct.map((v,i)=>[x(i),y(v)])),fill:'none',stroke:TEAL,'stroke-width':2.8,'stroke-linejoin':'round'},s);
+ mAct.forEach((v,i)=>el('circle',{cx:x(i),cy:y(v),r:4,fill:TEAL,stroke:SURF,'stroke-width':2,'data-tip':`<b>${M[i]}</b><br>Actual ${f1(v)}m<br>Budget ${f1(mBud[i])}m`},s));
+ mFc.forEach((v,i)=>el('circle',{cx:x(9+i),cy:y(v),r:4,fill:SURF,stroke:TEAL,'stroke-width':2,'data-tip':`<b>${M[9+i]}</b><br>Forecast ${f1(v)}m<br>Budget ${f1(mBud[9+i])}m`},s));
+ T(s,x(11)+7,y(mBud[11])+4,'Budget',{s:`fill:${AMB};font-weight:600`});T(s,x(11)+7,y(mFc[2])+4,'Forecast',{c:'b'});
+ M.forEach((m,i)=>{if(W>450||i%2===0)T(s,x(i),H-5,m,{a:'middle'})})}
+fan('fanS',400,240);fan('fanP',400,230);
+$('fanRead').innerHTML=`<b>Every month has closed AED ${f1(Math.min(...mAct.map((v,i)=>mBud[i]-v)))}m to ${f1(Math.max(...mAct.map((v,i)=>mBud[i]-v)))}m below budget</b> and the gap is not closing. On the current run rate the year ends at AED ${f1(fyF)}m against a budget of ${f1(fyB)}m.`;
+$('fyOut').innerHTML=[['Budget',f1(fyB)+'m',''],['Forecast',f1(fyF)+'m',''],['Gap',sg(fyF-fyB)+'m','neg']].map(r=>`<div><div class="l">${r[0]}</div><div class="v ${r[2]}">${r[1]}</div></div>`).join('');
+
+// ---------- NETWORK
+(function(){const W=540,H=340,L=40,R=14,Tp=14,B=34,s=S('bubble',W,H),x=v=>L+(v-60)/(92-60)*(W-L-R),y=v=>H-B-(v-93)/(115-93)*(H-B-Tp);
+ el('rect',{x:x(TU),y:Tp,width:W-R-x(TU),height:y(TE)-Tp,fill:TEAL,opacity:.1},s);
+ [65,70,75,80,85,90].forEach(v=>{el('line',{x1:x(v),x2:x(v),y1:Tp,y2:H-B,stroke:LINE},s);T(s,x(v),H-B+15,v+'%',{a:'middle'})});
+ [95,100,105,110,115].forEach(v=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:LINE},s);T(s,L-6,y(v)+4,v+'%',{a:'end'})});
+ el('line',{x1:x(TU),x2:x(TU),y1:Tp,y2:H-B,stroke:AMB,'stroke-width':1.6,'stroke-dasharray':'5 4'},s);el('line',{x1:L,x2:W-R,y1:y(TE),y2:y(TE),stroke:AMB,'stroke-width':1.6,'stroke-dasharray':'5 4'},s);
+ T(s,W-R-4,Tp+13,'On plan',{a:'end',s:`fill:${TEAL};font-weight:600`});T(s,L+6,Tp+13,'Quick but idle',{s:'font-weight:600'});T(s,L+6,H-B-7,'Idle and slow',{s:`fill:${RED};font-weight:600`});T(s,W-R-4,H-B-7,'Busy but slow',{a:'end',s:'font-weight:600'});
+ T(s,(L+W-R)/2,H-3,'Utilisation: hours worked as a share of hours attended',{a:'middle'});
+ SITES.slice().sort((a,b)=>b.lab-a.lab).forEach(d=>{const r=5+Math.sqrt(d.lab)*4.6,ok=d.u>=TU&&d.e>=TE,bad=d.u<TU-8&&d.e<TE-4;
+  el('circle',{cx:x(d.u),cy:y(d.e),r,fill:ok?TEAL:bad?RED:INK,opacity:.78,stroke:SURF,'stroke-width':1.5,'data-tip':`<b>${d.n}</b><br>Utilisation ${d.u}% · efficiency ${d.e}%<br>Sold per 100 attended: ${f1(d.prod)}<br>Labour sales AED ${f1(d.lab)}m`},s);
+  const lab=T(s,x(d.u),y(d.e)-r-4,d.k,{a:'middle',c:'b',s:'font-size:11px;pointer-events:none'})});
+ const below=SITES.filter(d=>d.u<TU).length;$('bubRead').innerHTML=`<b>${below} of 9 sites are left of the utilisation line; ${SITES.length-below} is right of it.</b> Efficiency is mixed but close. The network problem is idle time, and the biggest sites carry most of it.`})();
+
+(function(){const d=SITES.map(s=>({n:s.n,v:s.lab-s.labB,p:(s.lab-s.labB)/s.labB*100})).sort((a,b)=>a.v-b.v),W=540,RH=33,H=d.length*RH+8,s=S('divg',W,H),z=330,sc=36;
+ el('line',{x1:z,x2:z,y1:0,y2:H,stroke:STEEL},s);
+ d.forEach((r,i)=>{const yy=i*RH+6,w=Math.abs(r.v)*sc;T(s,0,yy+15,r.n,{c:'b',s:'font-size:12.5px'});
+  el('rect',{x:r.v<0?z-w:z,y:yy+2,width:Math.max(w,2),height:19,rx:4,fill:r.v<0?RED:TEAL,opacity:.4+.6*Math.min(1,Math.abs(r.p)/25),'data-tip':`<b>${r.n}</b><br>${sg(r.v)}m to budget (${sg(r.p)}%)`},s);
+  T(s,r.v<0?z-w-6:z+w+6,yy+16,sg(r.v),{a:r.v<0?'end':'start',c:'n',s:'font-size:14px'});T(s,W,yy+16,sg(r.p)+'%',{a:'end'})});
+ const top3=d.slice(0,3),sh=top3.reduce((a,r)=>a+r.v,0)/(N.lab-N.labB)*100;$('divRead').innerHTML=`<b>${top3.map(r=>r.n).join(', ')}</b> account for ${Math.round(sh)}% of the labour shortfall. Start the action plan there.`})();
+
+(function(){// heat table. [label, key, target, tolerance, higherBetter, fmt]
+ const K=[['Utilisation','u',85,10,1,v=>v+'%'],['Efficiency','e',108,8,1,v=>v+'%'],['Sold per 100 attended','prod',TP,12,1,v=>f1(v)],['Labour rate vs plan','rr',100,5,1,v=>f1(v)+'%'],['Parts first-pick','fill',92,8,1,v=>v+'%'],['Stock days','sd',60,40,0,v=>v],['Fixed first visit','ffv',92,6,1,v=>v+'%'],['Customer satisfaction','csi',88,7,1,v=>v],['Retention','ret',60,15,1,v=>v+'%'],['Warranty refusals','rej',2,5,0,v=>v+'%']];
+ SITES.forEach(s=>s.rr=s.r/s.rb*100*1.0);
+ const cell=(v,k)=>{if(v==null)return'<td style="color:var(--mute)" data-tip="Not applicable at this site">n/a</td>';const g=(k[4]?v-k[2]:k[2]-v)/k[3];const bg=g>=0?mix(TEAL,18+Math.min(22,g*40)):g>-.6?mix(AMB,24):mix(RED,16+Math.min(34,-g*34));return`<td style="background:${bg}" data-tip="Target ${k[5](k[2])}${k[4]?' or higher':' or lower'}">${k[5](v)}</td>`};
+ $('heat').innerHTML='<tr><th>Site</th>'+K.map(k=>`<th>${k[0]}</th>`).join('')+'</tr>'+SITES.map(s=>`<tr><td>${s.n}<small>${s.b}, ${s.t} technicians</small></td>${K.map(k=>cell(s[k[1]],k)).join('')}</tr>`).join('')})();
+
+// ---------- WORKSHOP
+function gauge(host,label,val,min,max,tgt,fmt,note){const d=document.createElement('div');d.className='card';d.innerHTML=`<h3>${label}</h3><p class="sub">${note}</p>`;host.appendChild(d);
+ const W=260,H=158,cx=130,cy=132,r=104,s=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'},d),a=v=>Math.PI*(1-(Math.max(min,Math.min(max,v))-min)/(max-min)),pt=(v,rr)=>[cx+rr*Math.cos(a(v)),cy-rr*Math.sin(a(v))];
+ const arc=(v0,v1,rr)=>{const p0=pt(v0,rr),p1=pt(v1,rr);return`M${p0[0].toFixed(1)} ${p0[1].toFixed(1)}A${rr} ${rr} 0 0 1 ${p1[0].toFixed(1)} ${p1[1].toFixed(1)}`};
+ el('path',{d:arc(min,max,r),fill:'none',stroke:SUNK,'stroke-width':16,'stroke-linecap':'round'},s);
+ const col=val>=tgt?TEAL:val>=tgt-(max-min)*.12?AMB:RED;el('path',{d:arc(min,val,r),fill:'none',stroke:col,'stroke-width':16,'stroke-linecap':'round'},s);
+ for(let i=0;i<=10;i++){const v=min+(max-min)*i/10,p0=pt(v,r-13),p1=pt(v,r-19);el('line',{x1:p0[0],y1:p0[1],x2:p1[0],y2:p1[1],stroke:STEEL,'stroke-width':1},s)}
+ const t0=pt(tgt,r+11),t1=pt(tgt,r-11);el('line',{x1:t0[0],y1:t0[1],x2:t1[0],y2:t1[1],stroke:INK,'stroke-width':3},s);const tl=pt(tgt,r+24);T(s,tl[0],tl[1]+3,'plan '+fmt(tgt),{a:'middle',s:'font-size:11px'});
+ const np=pt(val,r);el('circle',{cx:np[0],cy:np[1],r:11,fill:SURF,stroke:col,'stroke-width':4},s);
+ T(s,cx,cy-22,fmt(val),{a:'middle',c:'n',s:'font-size:34px'});T(s,cx-r,cy+20,fmt(min),{a:'middle'});T(s,cx+r,cy+20,fmt(max),{a:'middle'})}
+(function(){const g=$('gauges');gauge(g,'Utilisation',N.u,60,100,TU,pc,'Worked ÷ attended');gauge(g,'Efficiency',N.e,90,120,TE,pc,'Sold ÷ worked');gauge(g,'Sold per 100 attended',N.p,60,110,TP,f1,'Utilisation × efficiency');gauge(g,'Labour rate realised',N.elr/N.rb*100,90,104,100,pc,'Invoiced rate ÷ plan rate')})();
+
+function sim(){const du=+$('sU').value,de=+$('sE').value,dr=+$('sR').value;$('oU').textContent='+'+du+' pts';$('oE').textContent='+'+de+' pts';$('oR').textContent='+'+dr+'%';
+ let dl=0,dg=0,ns=0;SITES.forEach(s=>{const so=s.att*(s.u+du)/100*(s.e+de)/100,dh=so-s.sold;ns+=so;const vol=dh*s.r,rate=so*s.r*dr/100;dl+=vol+rate;dg+=vol*(GPL+s.pr*GPP)+rate});
+ $('simP').textContent=f1(ns/N.att*100);$('simL').textContent='+'+f1(dl/1e6*ANN)+'m';$('simG').textContent='+'+f1(dg/1e6*ANN)+'m'}
+['sU','sE','sR'].forEach(i=>$(i).addEventListener('input',sim));sim();
+
+(function(){const d=[['Waiting for parts',27,'Parts'],['No job allocated',22,'Workshop control'],['Waiting for customer approval',17,'Service advisers'],['Rework and comebacks',11,'Workshop'],['Waiting for bay or equipment',9,'Workshop'],['Vehicle movement and cleaning',8,'Workshop'],['Other and uncoded',6,'All']],W=540,RH=34,H=d.length*RH+4,s=S('idle',W,H),x0=210,sc=(W-x0-100)/27;let cum=0;
+ d.forEach((r,i)=>{const y=i*RH+4;cum+=r[1];T(s,0,y+16,r[0],{c:'b',s:'font-size:12.5px'});el('rect',{x:x0,y:y+3,width:r[1]*sc,height:18,rx:4,fill:i<3?RED:STEEL,opacity:i<3?.85-.15*i:.7,'data-tip':`<b>${r[0]}</b><br>${r[1]}% of unsold attended hours<br>Cumulative ${cum}% · owner: ${r[2]}`},s);T(s,x0+r[1]*sc+7,y+17,r[1]+'%',{c:'n',s:'font-size:14px'});T(s,W,y+17,r[2],{a:'end'})})})();
+
+// ---------- CUSTOMERS & PARTS
+(function(){const W=620,H=300,L=40,R=20,Tp=22,B=40,s=S('reten',W,H),x=i=>L+i*(W-L-R)/6,y=v=>H-B-v/100*(H-B-Tp);
+ [0,25,50,75,100].forEach(v=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:LINE},s);T(s,L-6,y(v)+4,v+'%',{a:'end'})});
+ el('path',{d:P(RBM.map((v,i)=>[x(i),y(v)]).concat(RET.map((v,i)=>[x(i),y(v)]).reverse()))+'Z',fill:RED,opacity:.16},s);
+ const wx=(x(2)+x(3))/2;el('line',{x1:wx,x2:wx,y1:Tp-8,y2:H-B,stroke:INK,'stroke-width':1.3,'stroke-dasharray':'3 4'},s);T(s,wx+6,Tp+2,'Warranty ends',{c:'b'});
+ el('path',{d:P(RBM.map((v,i)=>[x(i),y(v)])),fill:'none',stroke:AMB,'stroke-width':2,'stroke-dasharray':'5 4'},s);
+ el('path',{d:P(RET.map((v,i)=>[x(i),y(v)])),fill:'none',stroke:TEAL,'stroke-width':3,'stroke-linejoin':'round'},s);
+ RET.forEach((v,i)=>{const lost=UIO[i]*(RBM[i]-v)/100;el('circle',{cx:x(i),cy:y(v),r:5,fill:TEAL,stroke:SURF,'stroke-width':2,'data-tip':`<b>Year ${AGE[i]}</b><br>Retained ${v}% of ${f0(UIO[i])} vehicles<br>Good network ${RBM[i]}%<br>Gap: ${f0(lost)} vehicles`},s);T(s,x(i),y(v)+20,v+'%',{a:'middle',c:'n',s:'font-size:13px'});T(s,x(i),H-B+16,'Year '+AGE[i],{a:'middle'});T(s,x(i),H-B+31,f0(UIO[i]/1000)+'k vehicles',{a:'middle',s:'font-size:10.5px'})});
+ T(s,x(4)+8,y(RBM[4])-12,'Good network',{s:`fill:${AMB};font-weight:600`});
+ const lost=[3,4,5,6].reduce((a,i)=>a+UIO[i]*(RBM[i]-RET[i])/100,0),drop=RET[2]-RET[3];
+ $('retRead').innerHTML=`<b>Retention falls ${drop} points between year three and year four.</b> Across years four to seven that is about ${f0(Math.round(lost/100)*100)} vehicles a good network would still be servicing. Winning back six in every hundred is worth AED ${f1(r2)}m a year.`})();
+
+(function(){const W=420,H=300,s=S('warr',W,H),tot=WCL,seg=[['Paid first time',20.6,TEAL],['Paid after rework',2.3,AMB],['Refused',WREJ,RED]],bx=0,bw=W,by=26,bh=34;let cx=bx;
+ seg.forEach(r=>{const w=r[1]/tot*bw;el('rect',{x:cx,y:by,width:w-2,height:bh,rx:4,fill:r[2],'data-tip':`<b>${r[0]}</b><br>AED ${f1(r[1])}m · ${f1(r[1]/tot*100)}% of claims`},s);if(w>70){T(s,cx+8,by+22,`${r[0]} ${f1(r[1])}m`,{s:'fill:#fff;font-weight:600;font-size:12.5px'})}r.x=cx;r.w=w;cx+=w});
+ T(s,0,15,`Claims raised: AED ${f1(tot)}m`,{c:'b',s:'font-size:13px'});
+ const rj=seg[2],ty=112;el('path',{d:P([[rj.x,by+bh+2],[0,ty],[W,ty],[rj.x+rj.w-2,by+bh+2]])+'Z',fill:RED,opacity:.12},s);
+ T(s,0,ty-8,`Refused: AED ${f1(WREJ)}m (${f1(WREJ/tot*100)}%)`,{c:'b',s:`fill:${RED};font-size:13px`});T(s,W-56,ty-8,`+${f1(seg[1][1])}m paid late`,{a:'end',s:`fill:${AMB};font-weight:600`});
+ const why=[['Submitted after the deadline',.42],['Documents or photos missing',.36],['Labour time above standard',.21],['Old part not returned',.11]];
+ why.forEach((r,i)=>{const y=ty+14+i*42;T(s,0,y+12,r[0],{c:'b',s:'font-size:12.5px'});el('rect',{x:0,y:y+18,width:r[1]/.42*(W-70),height:14,rx:4,fill:RED,opacity:i<2?.85:.5,'data-tip':`<b>${r[0]}</b><br>AED ${f0(r[1]*1000)}k · ${Math.round(r[1]/WREJ*100)}% of refusals`},s);T(s,r[1]/.42*(W-70)+7,y+30,`${f0(r[1]*1000)}k`,{c:'n',s:'font-size:13.5px'})})})();
+
+(function(){const W=540,H=320,L=40,R=16,Tp=14,B=34,s=S('parts',W,H),x=v=>L+(v-30)/(125-30)*(W-L-R),y=v=>H-B-(v-78)/(98-78)*(H-B-Tp);
+ el('rect',{x:L,y:Tp,width:x(60)-L,height:y(92)-Tp,fill:TEAL,opacity:.12},s);T(s,x(60)+7,Tp+14,'Target corner: lean and available',{s:`fill:${TEAL};font-weight:600`});
+ [40,60,80,100,120].forEach(v=>{el('line',{x1:x(v),x2:x(v),y1:Tp,y2:H-B,stroke:LINE},s);T(s,x(v),H-B+15,v,{a:'middle'})});[80,85,90,95].forEach(v=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:LINE},s);T(s,L-6,y(v)+4,v+'%',{a:'end'})});
+ // trend line (least squares)
+ const n=SITES.length,mx=sum(d=>d.sd)/n,my=sum(d=>d.fill)/n,b=sum(d=>(d.sd-mx)*(d.fill-my))/sum(d=>(d.sd-mx)**2),a=my-b*mx;el('line',{x1:x(34),y1:y(a+b*34),x2:x(122),y2:y(a+b*122),stroke:STEEL,'stroke-width':1.5,'stroke-dasharray':'4 4'},s);
+ T(s,(L+W-R)/2,H-3,'Days of stock held',{a:'middle'});T(s,W-R-4,H-B-8,'Heavy and unavailable',{a:'end',s:`fill:${RED};font-weight:600`});
+ SITES.forEach(d=>{const bad=d.sd>80&&d.fill<90,ok=d.sd<=60&&d.fill>=92;el('circle',{cx:x(d.sd),cy:y(d.fill),r:8,fill:ok?TEAL:bad?RED:INK,opacity:.82,stroke:SURF,'stroke-width':1.5,'data-tip':`<b>${d.n}</b><br>${d.sd} days of stock<br>First-pick availability ${d.fill}%`},s);T(s,x(d.sd)+11,y(d.fill)+4,d.k,{c:'b',s:'font-size:11px;pointer-events:none'})})})();
+
+(function(){const W=540,H=320,L=40,R=16,Tp=14,B=34,s=S('csi',W,H),x=v=>L+(v-82)/(97-82)*(W-L-R),y=v=>H-B-(v-76)/(94-76)*(H-B-Tp);
+ [84,88,92,96].forEach(v=>{el('line',{x1:x(v),x2:x(v),y1:Tp,y2:H-B,stroke:LINE},s);T(s,x(v),H-B+15,v+'%',{a:'middle'})});[78,82,86,90,94].forEach(v=>{el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:LINE},s);T(s,L-6,y(v)+4,v,{a:'end'})});
+ const D=SITES.filter(d=>d.b!=='Quick service'),n=D.length,mx=D.reduce((a,d)=>a+d.ffv,0)/n,my=D.reduce((a,d)=>a+d.csi,0)/n,b=D.reduce((a,d)=>a+(d.ffv-mx)*(d.csi-my),0)/D.reduce((a,d)=>a+(d.ffv-mx)**2,0),a=my-b*mx;
+ el('line',{x1:x(83),y1:y(a+b*83),x2:x(94.5),y2:y(a+b*94.5),stroke:TEAL,'stroke-width':2,'stroke-dasharray':'5 4'},s);
+ el('line',{x1:L,x2:W-R,y1:y(88),y2:y(88),stroke:AMB,'stroke-width':1.4,'stroke-dasharray':'5 4'},s);T(s,W-R-4,y(88)-6,'Satisfaction target 88',{a:'end',s:`fill:${AMB};font-weight:600`});
+ T(s,(L+W-R)/2,H-3,'Fixed first visit',{a:'middle'});$('csiRead').innerHTML=`<b>Each point of fixed-first-visit goes with about ${b.toFixed(1)} points of satisfaction</b> at the full-service sites. Repeat repairs are the lever to report weekly.`;
+ SITES.forEach(d=>{const q=d.b==='Quick service';el('circle',{cx:x(d.ffv),cy:y(d.csi),r:8,fill:q?SURF:d.csi>=88?TEAL:d.csi<83?RED:INK,stroke:q?STEEL:SURF,'stroke-width':q?2:1.5,opacity:.85,'data-tip':`<b>${d.n}</b><br>Fixed first visit ${d.ffv}%<br>Satisfaction ${d.csi}${q?'<br>Quick service: simpler jobs, shown hollow':''}`},s);T(s,x(d.ffv)+11,y(d.csi)+4,d.k,{c:'b',s:'font-size:11px;pointer-events:none'})})})();
+
+// ---------- PLAN
+(function(){const st=[['Budget',gpB,'t',''],['Utilisation',gU,'','Service'],['Efficiency',gE,'','Workshop'],['Labour rate',gR,'','Finance'],['Parts volume and margin',dParts,'','Parts'],['Warranty',dWarr,'','Warranty'],['Other',dOth,'','Finance'],['Actual',gpA,'t','']];
+ const W=640,H=310,L=6,B=58,Tp=24,s=S('bridge',W,H),lo=Math.floor((gpA-6)/5)*5,hi=Math.ceil((gpB+2)/5)*5,y=v=>H-B-(v-lo)/(hi-lo)*(H-B-Tp),bw=(W-L)/st.length;let run=0;
+ st.forEach((r,i)=>{const x=L+i*bw+8,w=bw-16;let y0,y1,col;if(r[2]){y0=y(lo);y1=y(r[1]);col=INK;run=r[1]}else{y0=y(run);y1=y(run+r[1]);col=r[1]<0?RED:GRN;run+=r[1]}
+  el('rect',{x,y:Math.min(y0,y1),width:w,height:Math.max(Math.abs(y1-y0),2),rx:4,fill:col,opacity:r[2]?.85:1,'data-tip':`<b>${r[0]}</b><br>${r[2]?'AED '+f1(r[1])+'m':sg(r[1])+'m'}${r[3]?'<br>Owner: '+r[3]:''}`},s);
+  if(i<st.length-1)el('line',{x1:x+w,x2:x+bw+8,y1:y(run),y2:y(run),stroke:STEEL,'stroke-dasharray':'2 3'},s);
+  T(s,x+w/2,Math.min(y0,y1)-7,r[2]?f1(r[1]):sg(r[1]),{a:'middle',c:'n',s:`font-size:15px${r[2]?'':';fill:'+col}`});
+  const wd=r[0].split(' ');const l1=wd.length>2?wd.slice(0,2).join(' '):wd[0],l2=wd.length>2?wd.slice(2).join(' '):(wd[1]||'');T(s,x+w/2,H-B+16,l1,{a:'middle',c:'b',s:'font-size:11.5px'});if(l2)T(s,x+w/2,H-B+30,l2,{a:'middle',c:'b',s:'font-size:11.5px'});if(r[3])T(s,x+w/2,H-B+(l2?45:31),r[3],{a:'middle',s:'font-size:10px'})});
+ $('brRead').innerHTML=`<b>Utilisation alone explains ${Math.round(gU/(gpA-gpB)*100)}% of the gap.</b> Efficiency and rate together take a further ${f1(Math.abs(gE+gR))}m. Parts is a volume effect: fewer hours sold means fewer parts fitted.`})();
+
+(function(){const pb=N.labB*1.02+96,pa=pb+dParts/GPP,rows=[['Labour sales',N.lab,N.labB,N.lab*.985],['Parts sales, workshop and counter',pa,pb,pa*1.012],['Gross profit',gpA,gpB,gpA*1.021],['Hours sold (thousand)',N.sold/1000,N.att*TP/100/1000,N.sold/1000*1.004],['Labour rate realised (AED per hour)',N.elr,N.rb,N.elr*.972],['Customer-paid repair orders (thousand)',118.4,127.0,121.9]];
+ $('varT').innerHTML='<tr><th>Line</th><th class="r">Actual</th><th class="r">Budget</th><th class="r">Variance</th><th>Against budget</th><th class="r">Prior year</th><th class="r">Change</th></tr>'+rows.map(r=>{const v=r[1]-r[2],p=v/r[2]*100,w=Math.min(48,Math.abs(p)/16*48),py=(r[1]-r[3])/r[3]*100;return`<tr><td>${r[0]}</td><td class="r">${f1(r[1])}</td><td class="r">${f1(r[2])}</td><td class="r ${v<0?'neg':'pos'}">${sg(v)} (${sg(p)}%)</td><td><svg viewBox="0 0 100 14" style="width:100px"><line x1="50" x2="50" y1="0" y2="14" style="stroke:var(--steel)"/><rect x="${v<0?50-w:50}" y="3" width="${Math.max(w,1)}" height="8" rx="2" style="fill:var(--${v<0?'red':'green'})"/></svg></td><td class="r">${f1(r[3])}</td><td class="r ${py<0?'neg':'pos'}">${sg(py)}%</td></tr>`}).join('')})();
+
+// ---------- ERP
+(function(){const G=['Requirement signed','Source mapped','Data validated','User tested','Live'],R=[['Daily workshop loading','Service',[2,2,2,2,2]],['Technician hours and productivity','Service',[2,2,2,1,0]],['Labour and parts sales by site','Finance',[2,2,2,2,1]],['Gross profit by department','Finance',[2,2,1,0,0]],['Parts stock, ageing and availability','Parts',[2,2,1,0,0]],['Warranty claims and ageing','Warranty',[2,1,0,0,0]],['Service retention by vehicle age','Customer Experience',[2,1,0,0,0]],['Customer satisfaction and repeat repairs','Customer Experience',[2,2,1,0,0]],['Principal monthly return','Aftersales Director',[2,2,1,1,0]],['Budget, forecast and variance pack','Finance',[1,0,0,0,0]]];
+ const dot=v=>`<span class="dot ${v===2?'f':v===1?'h':''}" title="${v===2?'Done':v===1?'In progress':'Not started'}"></span>`;
+ $('ready').innerHTML='<tr><th>Report</th><th>Owner</th>'+G.map(g=>`<th style="text-align:center;white-space:normal;font-size:12px">${g}</th>`).join('')+'<th>Status</th></tr>'+R.map(r=>{const done=r[2].filter(v=>v===2).length,p=done===5?['g','Live']:done>=3?['a','On track']:['x','At risk'];return`<tr><td><b style="font-weight:600">${r[0]}</b></td><td>${r[1]}</td>${r[2].map(v=>`<td style="text-align:center">${dot(v)}</td>`).join('')}<td><span class="pill ${p[0]}">${p[1]}</span></td></tr>`}).join('')})();
+
+(function(){const W=420,H=262,s=S('cal',W,H),L=4,sc=(W-L-8)/12,steps=['Extract','Site validation','Consolidate','Commentary','Review'],now=[[0,3],[3,7],[7,10],[10,11],[11,12]],nw=[[0,1],[1,2],[2,3],[3,4],[4,5]],op=[.95,.78,.62,.46,.32];
+ for(let d=0;d<=12;d+=2){el('line',{x1:L+d*sc,x2:L+d*sc,y1:24,y2:H-34,stroke:LINE},s);if(d!==2)T(s,L+d*sc,H-18,d===0?'Month end':'Day '+d,{a:d===0?'start':'middle'})}
+ const row=(lab,segs,y,col,end)=>{T(s,L,y-8,lab,{c:'b',s:'font-size:13px'});segs.forEach((g,i)=>{const w=(g[1]-g[0])*sc;el('rect',{x:L+g[0]*sc,y,width:w-2,height:34,rx:4,fill:col,opacity:op[i],'data-tip':`<b>${steps[i]}</b><br>Day ${g[0]} to day ${g[1]} · ${g[1]-g[0]} day${g[1]-g[0]>1?'s':''}`},s);if(w>58)T(s,L+g[0]*sc+7,y+21,steps[i],{s:'fill:#fff;font-weight:600;font-size:11.5px;pointer-events:none'})});T(s,L+end*sc+8,y+23,'Day '+end,{c:'n',s:'font-size:16px'})};
+ row('Today: assembled by hand from site spreadsheets',now,52,RED,12);row('Proposed: built from the ERP data layer',nw,172,TEAL,5);
+ el('path',{d:`M${L+12*sc} 90 L${L+12*sc} 108`,fill:'none',stroke:STEEL,'stroke-dasharray':'3 3'},s);T(s,L+12*sc,124,'7 days back, every month',{a:'end',s:`fill:${GRN};font-weight:600;font-size:12.5px`})})();
+
+(function(){const R=[['Labour sales (AED m)','9.92','9.92','9.92','Tied','g'],['Parts sales (AED m)','23.47','23.41','23.47','Counter returns posted on different dates; rule agreed with Finance','a'],['Hours sold','47,310','47,310','47,310','Tied','g'],['Repair orders closed','13,284','13,251','13,284','33 internal orders have no site code in the new ERP','x'],['Warranty claims submitted (AED m)','2.71','2.71','2.68','Principal return excludes claims still awaiting part numbers','a'],['Parts stock value (AED m)','86.2','86.2','n/a','Tied','g']];
+ $('recon').innerHTML='<tr><th>Line</th><th class="r">Old system</th><th class="r">New ERP</th><th class="r">Principal return</th><th>Explanation</th><th>Status</th></tr>'+R.map(r=>`<tr><td>${r[0]}</td><td class="r">${r[1]}</td><td class="r">${r[2]}</td><td class="r">${r[3]}</td><td>${r[4]}</td><td><span class="pill ${r[5]}">${r[5]==='g'?'Clean':r[5]==='a'?'Explained':'Open'}</span></td></tr>`).join('')})();
+
+// ---------- COMPANY
+$('defs').innerHTML='<tr><th>Measure</th><th>How it is calculated</th><th class="r">Target here</th></tr>'+[['Utilisation','Hours worked on jobs ÷ hours attended','85%'],['Efficiency','Hours sold ÷ hours worked','108%'],['Sold per 100 attended','Utilisation × efficiency','91.8'],['Parts first-pick availability','Lines supplied from stock at first request','92%'],['Stock days','Stock value ÷ daily cost of parts sold','60'],['Fixed first visit','Jobs with no return for the same fault in 30 days','92%'],['Service retention','Vehicles serviced in the last 12 months ÷ vehicles in the area','60%'],['Warranty refusals','Claim value refused ÷ claim value raised','2%']].map(r=>`<tr><td><b style="font-weight:600">${r[0]}</b></td><td>${r[1]}</td><td class="r">${r[2]}</td></tr>`).join('');
+$('jd').innerHTML='<tr><th>The job asks for</th><th>Where it is shown</th></tr>'+[['Dashboards, KPI trackers and performance analysis','Network scorecard; Workshop dials'],['Consolidate data from multiple sites and functions','Nine sites on one set of definitions'],['Budgeting, forecasting and target-setting','Plan and forecast: bridge, outlook, what-if model'],['Variance analysis; trends, risks, gaps, opportunities','Budget-to-actual bridge with owners; site shortfall chart'],['Executive summaries for the Aftersales Director','The story: one headline, one chart, five actions'],['Principal and OEM reporting','Three-way reconciliation including the principal return'],['Data accuracy, consistency and timeliness','Reconciliation log; month-end calendar'],['ERP implementation: requirements, validation, testing','Report readiness through five gates'],['Templates, calendars and governance','Definitions table; twelve days to five'],['Productivity, efficiency, utilisation, labour and parts sales, retention, satisfaction, warranty, profitability','Every one has a chart and a target'],['Track action plans and outcomes','Five actions with owner, measure and value']].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+</script>
+</body></html>
